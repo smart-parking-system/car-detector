@@ -1,0 +1,21 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>A Basic HTML5 Template</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8  offset-lg-2">
+            <div class="main">
+                <button id="draw">DRAW</button>
+                <button id="delete">DELETE</button>
+                <img id="stream" src="{{ url_for('video_feed') }}" width="100%">
+                <canvas></canvas>
+                <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
