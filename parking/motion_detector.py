@@ -2,22 +2,26 @@ import cv2 as open_cv
 import numpy as np
 from parking.drawing_utils import draw_contours
 from parking.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
+import time
+import threading
+import hashlib
+import json
+import os
 
 
 class MotionDetector:
-    LAPLACIAN = .9
-    DETECT_DELAY = 1
-
-    def __init__(self, video):
+    def __init__(self, video, laplacian: float = 1, detect_delay: float = 1):
         self.video = video
-        self.coordinates_data = []
+        self.coordinates_data = self.__load_points()
         self.contours = []
         self.bounds = []
         self.mask = []
         self.statuses = []
-        self.laplacian = []
+        self.laplacians = []
         self.times = []
         self.__width, self.__height = 0, 0
+        self.laplacian = laplacian
+        self.detect_delay = detect_delay
 
     def detect_motion(self):
         capture = open_cv.VideoCapture(self.video)
@@ -47,9 +51,9 @@ class MotionDetector:
                     continue
 
                 if self.times[index] is not None and self.status_changed(self.statuses, index, status):
-                    if position_in_seconds - self.times[index] >= MotionDetector.DETECT_DELAY:
+                    if position_in_seconds - self.times[index] >= self.detect_delay:
                         self.statuses[index] = status
-                        self.laplacian[index] = l
+                        self.laplacians[index] = l
                         self.times[index] = None
                     continue
 
@@ -58,7 +62,7 @@ class MotionDetector:
             for index, p in enumerate(self.coordinates_data):
                 coordinates = self._coordinates(p)
                 color = COLOR_GREEN if self.statuses[index] else COLOR_BLUE
-                draw_contours(new_frame, coordinates, str(round(self.laplacian[index], 2)), COLOR_WHITE, color)
+                draw_contours(new_frame, coordinates, str(round(self.laplacians[index], 2)), COLOR_WHITE, color)
 
             ret, buffer = open_cv.imencode('.jpg', new_frame)
             new_frame = buffer.tobytes()
@@ -72,11 +76,10 @@ class MotionDetector:
 
         roi_gray = grayed[rect[1]:(rect[1] + rect[3]), rect[0]:(rect[0] + rect[2])]
         laplacian = open_cv.Laplacian(roi_gray, open_cv.CV_64F)
-
         coordinates[:, 0] = coordinates[:, 0] - rect[0]
         coordinates[:, 1] = coordinates[:, 1] - rect[1]
         l_result = np.mean(np.abs(laplacian * self.mask[index]))
-        status = l_result < MotionDetector.LAPLACIAN
+        status = l_result < self.laplacian
         return status, l_result
 
     @staticmethod
@@ -94,7 +97,7 @@ class MotionDetector:
     def __add_slot(self, point):
         self.statuses.append(False)
         self.times.append(None)
-        self.laplacian.append(0.00)
+        self.laplacians.append(0.00)
         coordinates = self._coordinates(point)
         rect = open_cv.boundingRect(coordinates)
         new_coordinates = coordinates.copy()
@@ -119,6 +122,7 @@ class MotionDetector:
             point['coordinates'].append([int(self.__width * coordinate['x']), int(self.__height * coordinate['y'])])
         self.coordinates_data.append(point)
         self.__add_slot(point)
+        self.save()
 
     def delete_slot(self, _point):
         point = [int(self.__width * _point['x']), int(self.__height * _point['y'])]
@@ -126,14 +130,34 @@ class MotionDetector:
             coordinates = coordinates['coordinates']
             if is_inside(*coordinates[0], *coordinates[1], *coordinates[2], *point) or \
                     is_inside(*coordinates[1], *coordinates[2], *coordinates[3], *point):
-                del self.coordinates_data[i]
-                del self.contours[i]
-                del self.bounds[i]
-                del self.mask[i]
-                del self.statuses[i]
-                del self.laplacian[i]
-                del self.times[i]
+                del self.coordinates_data[i], self.contours[i], self.bounds[i], self.mask[i], self.statuses[i], \
+                    self.laplacians[i], self.times[i]
                 break
+        self.save()
+
+    def slot_handler(self, func):
+        def init():
+            count = len([i for i in self.statuses if i])
+            while True:
+                _count = len([i for i in self.statuses if i])
+                if _count != count:
+                    func(_count)
+                    count = _count
+                time.sleep(1)
+
+        threading.Thread(target=init, daemon=True).start()
+
+    def save(self):
+        if not os.path.exists('data'):
+            os.makedirs('data')
+        with open(f"data/{hashlib.md5(self.video.encode()).hexdigest()}.points", "w") as file:
+            json.dump(self.coordinates_data, file)
+
+    def __load_points(self):
+        if os.path.exists(f"data/{hashlib.md5(self.video.encode()).hexdigest()}.points"):
+            with open(f"data/{hashlib.md5(self.video.encode()).hexdigest()}.points", "r") as file:
+                return json.loads(file.read())
+        return []
 
 
 class CaptureReadError(Exception):

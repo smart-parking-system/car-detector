@@ -2,10 +2,11 @@ from flask import Flask, render_template, Response, request, jsonify
 import json
 from parking.motion_detector import *
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__)
 
 # detector = MotionDetector('https://frn.rtsp.me/SAUNckeorr8y8CRuAwZspw/1636313331/hls/yssKD2RY.m3u8?ip=93.75.241.227')
-detector = MotionDetector('videos/parking_lot_2.mp4')
+detector = MotionDetector('https://frn.rtsp.me/SAUNckeorr8y8CRuAwZspw/1636313331/hls/yssKD2RY.m3u8?ip=93.75.241.227')
+# detector = MotionDetector('videos/parking_lot_2.mp4')
 
 
 @app.route('/')
@@ -30,6 +31,11 @@ def delete_corners():
 @app.route('/video_feed')
 def video_feed():
     return Response(detector.detect_motion(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@detector.slot_handler
+def test(count):
+    print(f"Free slots {count}")
 
 
 if __name__ == '__main__':
