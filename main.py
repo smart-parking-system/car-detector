@@ -18,7 +18,13 @@ def parse_args() -> Dict:
     result, i = {'host': '0.0.0.0', 'port': 5000, 'src': DEFAULT_URL}, 1
     while (i < len(sys.argv)):
         if sys.argv[i] == '--help':
-            print('SPS Car Detector v')
+            print(f'SPS Car Detector v{VERSION}\n'
+                  f'Usage: python3 {sys.argv[0]} [OPTIONS] [SOURCE]\n'
+                   'Options:\n'
+                   '  --help               - Shows this message\n'
+                   '  -p PORT, --port PORT - Sets server port\n'
+                   '  -h HOST, --host HOST - Sets server host\n')
+            exit(0)
         elif sys.argv[i] in ['-p', '--port']:
             result['port'] = get_next(i:=i+1)
         elif sys.argv[i] in ['-h', '--host']:
