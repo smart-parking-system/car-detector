@@ -149,3 +149,16 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Mac OS
+.DS_Store
+
+# vim
+*.swp
+
+# vscode
+.vscode
+
+# Idea
+.idea
+
