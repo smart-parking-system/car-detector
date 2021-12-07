@@ -1,5 +1,5 @@
-from parking.drawing_utils import draw_contours
-from parking.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
+from .drawing_utils import draw_contours
+from .colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
 from typing import List, Tuple, Dict, Callable
 import numpy as np
 import threading

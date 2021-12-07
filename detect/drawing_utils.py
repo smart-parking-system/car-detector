@@ -1,4 +1,4 @@
-from parking.colors import COLOR_RED
+from .colors import COLOR_RED
 import cv2
 
 def draw_contours(image,
