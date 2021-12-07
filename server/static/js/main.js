@@ -26,7 +26,7 @@ function deleteSquare(e) {
             },
             method: "DELETE",
             body: JSON.stringify({x: e.layerX / ctx.canvas.width, y: e.layerY / ctx.canvas.height})
-        // }).then(function (res) { // Do nothing on OK
+        // }).then(function (res) { // Do nothing if OK
         }).catch(function (res) {
             console.log(res);
         }
