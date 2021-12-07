@@ -3,7 +3,6 @@
 from typing import List, Dict, Any
 from detect import MotionDetector
 from server import Server, DEFAULT_URL
-# from pathlib import Path
 import sys
 
 VERSION='0.1'
@@ -16,7 +15,7 @@ def parse_args() -> Dict:
             exit('Expected a value after ' + sys.argv[i-1])
 
     result, i = {'host': '0.0.0.0', 'port': 5000, 'src': DEFAULT_URL}, 1
-    while (i < len(sys.argv)):
+    while i < len(sys.argv):
         if sys.argv[i] == '--help':
             print(f'SPS Car Detector v{VERSION}\n'
                   f'Usage: python3 {sys.argv[0]} [OPTIONS] [SOURCE]\n'
@@ -35,6 +34,6 @@ def parse_args() -> Dict:
     return result
 
 if __name__ == '__main__':
-    # Path("data").mkdir(exist_ok=True)
     args = parse_args()
     Server(MotionDetector(args['src'])).run(args)
+
