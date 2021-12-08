@@ -1,6 +1,6 @@
+from typing import List, Tuple, Dict, Callable
 from .drawing_utils import draw_contours
 from .colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
-from typing import List, Tuple, Dict, Callable
 import numpy as np
 import threading
 import time
@@ -77,7 +77,6 @@ class MotionDetector:
         coordinates[:, 0] = coordinates[:, 0] - rect[0]
         coordinates[:, 1] = coordinates[:, 1] - rect[1]
         l_result = np.mean(np.abs(laplacian * self.mask[index]))
-        #l_result = np.mean(np.abs(np.dot(laplacian, self.mask[index])))
         status = l_result < self.laplacian
         return status, l_result
 
@@ -111,7 +110,6 @@ class MotionDetector:
             color=255,
             thickness=-1,
             lineType=cv2.LINE_8)
-
         mask = mask == 255
         self.mask.append(mask)
 
@@ -170,4 +168,3 @@ def is_inside(x1, y1, x2, y2, x3, y3, x, y):
          area(x1, y1, x, y, x3, y3),
          area(x1, y1, x2, y2, x, y)]
     return a[0] == a[1] + a[2] + a[3]
-
