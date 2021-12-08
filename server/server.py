@@ -1,6 +1,5 @@
 from flask import Flask, render_template, Response, request, jsonify
 from typing import Final, List
-# from ..detect.motion_detector import *
 import json
 
 DEFAULT_URL: Final[str] = 'https://frn.rtsp.me/SAUNckeorr8y8CRuAwZspw/1636313331/hls/yssKD2RY.m3u8?ip=93.75.241.227'

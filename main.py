@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import List, Dict, Any
+from typing import Dict, Any
 from detect import MotionDetector
 from server import Server, DEFAULT_URL
 import sys
@@ -22,7 +22,7 @@ def parse_args() -> Dict:
                    'Options:\n'
                    '  --help               - Shows this message\n'
                    '  -p PORT, --port PORT - Sets server port\n'
-                   '  -h HOST, --host HOST - Sets server host\n')
+                   '  -h HOST, --host HOST - Sets server host')
             exit(0)
         elif sys.argv[i] in ['-p', '--port']:
             result['port'] = get_next(i:=i+1)
