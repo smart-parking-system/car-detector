@@ -1,4 +1,4 @@
-let canvas = document.getElementsById('canvas');
+let canvas = document.getElementById('canvas');
 let isDraw = true;
 let ctx = canvas.getContext('2d');
 let points = [];

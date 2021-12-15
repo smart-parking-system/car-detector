@@ -1,8 +1,11 @@
 from flask import Flask, render_template, Response, request, jsonify
 from typing import Final, List
 import json
+import requests
+
 
 DEFAULT_URL: Final[str] = 'https://frn.rtsp.me/SAUNckeorr8y8CRuAwZspw/1636313331/hls/yssKD2RY.m3u8?ip=93.75.241.227'
+
 
 class Server:
     def __init__(self, detector):
@@ -31,7 +34,8 @@ class Server:
 
         @self.detector.slot_handler
         def test(count):
-            print(f"Free slots {count}")
+            for i in count:
+                print(requests.put(f'http://68.183.240.247/lot/{i+1}', json={"id": i+1, "parkingId": 1, "status": int(count[i]), "internalId": i+1}).content)
 
     def run(self, args: List[str]):
         self.app.run(host=args['host'], port=args['port'])

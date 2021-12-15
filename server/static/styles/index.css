@@ -42,7 +42,7 @@ body {
 }
 
 canvas {
-    width: 1200px;
+    left: 0;
     height: 100%;
     position: absolute;
 }
